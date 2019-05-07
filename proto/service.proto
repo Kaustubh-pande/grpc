@@ -1,0 +1,12 @@
+syntax = "proto3";
+package proto;
+import "google/protobuf/timestamp.proto";
+
+
+message drug {
+    int32 id = 1;
+    string name = 2;
+    int32 quantity = 3;
+    int32 power = 4;
+    google.protobuf.Timestamp created_at = 5;
+}
