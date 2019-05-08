@@ -4,9 +4,12 @@
 package proto
 
 import (
+	context "context"
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
-	timestamp "github.com/golang/protobuf/ptypes/timestamp"
+	grpc "google.golang.org/grpc"
+	codes "google.golang.org/grpc/codes"
+	status "google.golang.org/grpc/status"
 	math "math"
 )
 
@@ -22,14 +25,12 @@ var _ = math.Inf
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
 type Drug struct {
-	Id                   int32                `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	Name                 string               `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	Quantity             int32                `protobuf:"varint,3,opt,name=quantity,proto3" json:"quantity,omitempty"`
-	Power                int32                `protobuf:"varint,4,opt,name=power,proto3" json:"power,omitempty"`
-	CreatedAt            *timestamp.Timestamp `protobuf:"bytes,5,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}             `json:"-"`
-	XXX_unrecognized     []byte               `json:"-"`
-	XXX_sizecache        int32                `json:"-"`
+	Id                   string   `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name                 string   `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Power                int32    `protobuf:"varint,3,opt,name=power,proto3" json:"power,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
 }
 
 func (m *Drug) Reset()         { *m = Drug{} }
@@ -57,11 +58,11 @@ func (m *Drug) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_Drug proto.InternalMessageInfo
 
-func (m *Drug) GetId() int32 {
+func (m *Drug) GetId() string {
 	if m != nil {
 		return m.Id
 	}
-	return 0
+	return ""
 }
 
 func (m *Drug) GetName() string {
@@ -71,13 +72,6 @@ func (m *Drug) GetName() string {
 	return ""
 }
 
-func (m *Drug) GetQuantity() int32 {
-	if m != nil {
-		return m.Quantity
-	}
-	return 0
-}
-
 func (m *Drug) GetPower() int32 {
 	if m != nil {
 		return m.Power
@@ -85,31 +79,258 @@ func (m *Drug) GetPower() int32 {
 	return 0
 }
 
-func (m *Drug) GetCreatedAt() *timestamp.Timestamp {
+// Created a blank get request
+type GetRequest struct {
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *GetRequest) Reset()         { *m = GetRequest{} }
+func (m *GetRequest) String() string { return proto.CompactTextString(m) }
+func (*GetRequest) ProtoMessage()    {}
+func (*GetRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_a0b84a42fa06f626, []int{1}
+}
+
+func (m *GetRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetRequest.Unmarshal(m, b)
+}
+func (m *GetRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetRequest.Marshal(b, m, deterministic)
+}
+func (m *GetRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetRequest.Merge(m, src)
+}
+func (m *GetRequest) XXX_Size() int {
+	return xxx_messageInfo_GetRequest.Size(m)
+}
+func (m *GetRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GetRequest proto.InternalMessageInfo
+
+type Response struct {
+	Created              bool     `protobuf:"varint,1,opt,name=created,proto3" json:"created,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *Response) Reset()         { *m = Response{} }
+func (m *Response) String() string { return proto.CompactTextString(m) }
+func (*Response) ProtoMessage()    {}
+func (*Response) Descriptor() ([]byte, []int) {
+	return fileDescriptor_a0b84a42fa06f626, []int{2}
+}
+
+func (m *Response) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_Response.Unmarshal(m, b)
+}
+func (m *Response) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_Response.Marshal(b, m, deterministic)
+}
+func (m *Response) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Response.Merge(m, src)
+}
+func (m *Response) XXX_Size() int {
+	return xxx_messageInfo_Response.Size(m)
+}
+func (m *Response) XXX_DiscardUnknown() {
+	xxx_messageInfo_Response.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Response proto.InternalMessageInfo
+
+func (m *Response) GetCreated() bool {
 	if m != nil {
-		return m.CreatedAt
+		return m.Created
+	}
+	return false
+}
+
+type GetResponse struct {
+	// Added a pluralised consignment to our generic response message
+	Drug                 []*Drug  `protobuf:"bytes,2,rep,name=drug,proto3" json:"drug,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *GetResponse) Reset()         { *m = GetResponse{} }
+func (m *GetResponse) String() string { return proto.CompactTextString(m) }
+func (*GetResponse) ProtoMessage()    {}
+func (*GetResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_a0b84a42fa06f626, []int{3}
+}
+
+func (m *GetResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetResponse.Unmarshal(m, b)
+}
+func (m *GetResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetResponse.Marshal(b, m, deterministic)
+}
+func (m *GetResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetResponse.Merge(m, src)
+}
+func (m *GetResponse) XXX_Size() int {
+	return xxx_messageInfo_GetResponse.Size(m)
+}
+func (m *GetResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GetResponse proto.InternalMessageInfo
+
+func (m *GetResponse) GetDrug() []*Drug {
+	if m != nil {
+		return m.Drug
 	}
 	return nil
 }
 
 func init() {
-	proto.RegisterType((*Drug)(nil), "proto.drug")
+	proto.RegisterType((*Drug)(nil), "proto.Drug")
+	proto.RegisterType((*GetRequest)(nil), "proto.GetRequest")
+	proto.RegisterType((*Response)(nil), "proto.Response")
+	proto.RegisterType((*GetResponse)(nil), "proto.GetResponse")
 }
 
 func init() { proto.RegisterFile("service.proto", fileDescriptor_a0b84a42fa06f626) }
 
 var fileDescriptor_a0b84a42fa06f626 = []byte{
-	// 184 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x3c, 0x8e, 0xb1, 0xce, 0x82, 0x30,
-	0x14, 0x46, 0x53, 0x7e, 0xfa, 0x47, 0xae, 0xd1, 0xa1, 0x71, 0x68, 0x58, 0x24, 0x4e, 0x4c, 0x25,
-	0xd1, 0xc9, 0xd1, 0x57, 0x20, 0xee, 0xa6, 0xd0, 0x2b, 0x69, 0x22, 0x14, 0xcb, 0x45, 0xe3, 0x93,
-	0xf8, 0xba, 0x26, 0x45, 0x9c, 0xee, 0x3d, 0xf9, 0xce, 0x70, 0x60, 0x35, 0xa0, 0x7f, 0xd8, 0x1a,
-	0x55, 0xef, 0x1d, 0x39, 0xc1, 0xc3, 0x49, 0xb7, 0x8d, 0x73, 0xcd, 0x0d, 0x8b, 0x40, 0xd5, 0x78,
-	0x2d, 0xc8, 0xb6, 0x38, 0x90, 0x6e, 0xfb, 0xc9, 0xdb, 0xbd, 0x19, 0xc4, 0xc6, 0x8f, 0x8d, 0x58,
-	0x43, 0x64, 0x8d, 0x64, 0x19, 0xcb, 0x79, 0x19, 0x59, 0x23, 0x04, 0xc4, 0x9d, 0x6e, 0x51, 0x46,
-	0x19, 0xcb, 0x93, 0x32, 0xfc, 0x22, 0x85, 0xc5, 0x7d, 0xd4, 0x1d, 0x59, 0x7a, 0xc9, 0xbf, 0x60,
-	0xfe, 0x58, 0x6c, 0x80, 0xf7, 0xee, 0x89, 0x5e, 0xc6, 0x61, 0x98, 0x40, 0x1c, 0x01, 0x6a, 0x8f,
-	0x9a, 0xd0, 0x5c, 0x34, 0x49, 0x9e, 0xb1, 0x7c, 0xb9, 0x4f, 0xd5, 0x14, 0xa5, 0xe6, 0x28, 0x75,
-	0x9e, 0xa3, 0xca, 0xe4, 0x6b, 0x9f, 0xa8, 0xfa, 0x0f, 0xf3, 0xe1, 0x13, 0x00, 0x00, 0xff, 0xff,
-	0x35, 0x3c, 0x6b, 0xa1, 0xd9, 0x00, 0x00, 0x00,
+	// 218 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x4c, 0x8f, 0xcd, 0x4e, 0x85, 0x30,
+	0x10, 0x85, 0xa5, 0x17, 0xbc, 0xd7, 0xa9, 0x3f, 0x71, 0xe2, 0xa2, 0xb9, 0x1b, 0x49, 0xe3, 0x82,
+	0x85, 0x61, 0x81, 0x2f, 0x60, 0xa2, 0x09, 0xfb, 0xfa, 0x04, 0x08, 0x13, 0xc2, 0x42, 0x8a, 0x6d,
+	0xd1, 0xd7, 0x37, 0x4c, 0x21, 0xb2, 0x6a, 0xcf, 0x99, 0x33, 0x27, 0xdf, 0xc0, 0x8d, 0x27, 0xf7,
+	0x33, 0xb4, 0x54, 0x4e, 0xce, 0x06, 0x8b, 0x19, 0x3f, 0xfa, 0x15, 0xd2, 0x77, 0x37, 0xf7, 0x78,
+	0x0b, 0x62, 0xe8, 0x54, 0x92, 0x27, 0xc5, 0x95, 0x11, 0x43, 0x87, 0x08, 0xe9, 0xd8, 0x7c, 0x91,
+	0x12, 0xec, 0xf0, 0x1f, 0x1f, 0x20, 0x9b, 0xec, 0x2f, 0x39, 0x75, 0xc8, 0x93, 0x22, 0x33, 0x51,
+	0xe8, 0x6b, 0x80, 0x9a, 0x82, 0xa1, 0xef, 0x99, 0x7c, 0xd0, 0x4f, 0x70, 0x32, 0xe4, 0x27, 0x3b,
+	0x7a, 0x42, 0x05, 0xc7, 0xd6, 0x51, 0x13, 0x28, 0x16, 0x9f, 0xcc, 0x26, 0x75, 0x09, 0x92, 0x77,
+	0xd6, 0xe0, 0x23, 0xa4, 0x9d, 0x9b, 0x7b, 0x25, 0xf2, 0x43, 0x21, 0x2b, 0x19, 0x09, 0xcb, 0x85,
+	0xcb, 0xf0, 0xa0, 0xb2, 0x20, 0x17, 0xf5, 0x11, 0x2f, 0xc0, 0x67, 0x80, 0x37, 0x6e, 0x62, 0xf4,
+	0x7d, 0xfe, 0x7c, 0xb7, 0x8a, 0xad, 0x5b, 0x5f, 0x60, 0x05, 0xc7, 0x9a, 0x02, 0x47, 0xef, 0xd7,
+	0xe9, 0x3f, 0xf0, 0x19, 0xf7, 0xd6, 0xb6, 0xf3, 0x79, 0xc9, 0xe6, 0xcb, 0x5f, 0x00, 0x00, 0x00,
+	0xff, 0xff, 0x29, 0x3c, 0xed, 0x98, 0x35, 0x01, 0x00, 0x00,
+}
+
+// Reference imports to suppress errors if they are not otherwise used.
+var _ context.Context
+var _ grpc.ClientConn
+
+// This is a compile-time assertion to ensure that this generated file
+// is compatible with the grpc package it is being compiled against.
+const _ = grpc.SupportPackageIsVersion4
+
+// DrugServiceClient is the client API for DrugService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
+type DrugServiceClient interface {
+	CreateDrug(ctx context.Context, in *Drug, opts ...grpc.CallOption) (*Response, error)
+	// Created a new method
+	GetDrug(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error)
+}
+
+type drugServiceClient struct {
+	cc *grpc.ClientConn
+}
+
+func NewDrugServiceClient(cc *grpc.ClientConn) DrugServiceClient {
+	return &drugServiceClient{cc}
+}
+
+func (c *drugServiceClient) CreateDrug(ctx context.Context, in *Drug, opts ...grpc.CallOption) (*Response, error) {
+	out := new(Response)
+	err := c.cc.Invoke(ctx, "/proto.DrugService/CreateDrug", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *drugServiceClient) GetDrug(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error) {
+	out := new(GetResponse)
+	err := c.cc.Invoke(ctx, "/proto.DrugService/GetDrug", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// DrugServiceServer is the server API for DrugService service.
+type DrugServiceServer interface {
+	CreateDrug(context.Context, *Drug) (*Response, error)
+	// Created a new method
+	GetDrug(context.Context, *GetRequest) (*GetResponse, error)
+}
+
+// UnimplementedDrugServiceServer can be embedded to have forward compatible implementations.
+type UnimplementedDrugServiceServer struct {
+}
+
+func (*UnimplementedDrugServiceServer) CreateDrug(ctx context.Context, req *Drug) (*Response, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateDrug not implemented")
+}
+func (*UnimplementedDrugServiceServer) GetDrug(ctx context.Context, req *GetRequest) (*GetResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetDrug not implemented")
+}
+
+func RegisterDrugServiceServer(s *grpc.Server, srv DrugServiceServer) {
+	s.RegisterService(&_DrugService_serviceDesc, srv)
+}
+
+func _DrugService_CreateDrug_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Drug)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DrugServiceServer).CreateDrug(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.DrugService/CreateDrug",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DrugServiceServer).CreateDrug(ctx, req.(*Drug))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DrugService_GetDrug_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DrugServiceServer).GetDrug(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.DrugService/GetDrug",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DrugServiceServer).GetDrug(ctx, req.(*GetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+var _DrugService_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "proto.DrugService",
+	HandlerType: (*DrugServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "CreateDrug",
+			Handler:    _DrugService_CreateDrug_Handler,
+		},
+		{
+			MethodName: "GetDrug",
+			Handler:    _DrugService_GetDrug_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "service.proto",
 }
